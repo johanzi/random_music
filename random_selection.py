@@ -14,6 +14,7 @@ import Tkinter, Tkconstants, tkFileDialog, os
 # Function requiring directory to user
 # Variable 'dir' created to personalize the GUI text
 def get_dirname(dir):
+    # withdraw allows to remove the default root window displayed by Tk
     Tk().withdraw()
     dirname = tkFileDialog.askdirectory(initialdir=os.getcwd(),title='Please select '+dir)
     if len(dirname) > 0:
@@ -26,21 +27,27 @@ def get_dirname(dir):
 
 # Require 
 dir = "directory containing music"
-dir_input = get_dirname(dir)
+#dir_input = get_dirname(dir)
 
 # It will appear very quick if I don't use the stop function of os, here just for testing
-print 'dir_input is '+dir_input
-
-
+# print 'dir_input is '+dir_input
 
 # Ask output directory
 # Require 
 dir = "destination directory"
-dir_output = get_dirname(dir)
+#dir_output = get_dirname(dir)
 
 
 
 # Ask for the number of songs requested
+# Still searching for an easy snippet from the web
+# x = get_song_number()
+# print x
+
+root = Tk()
+Button(root, text="Press here", command=hello).pack()
+root.mainloop()
+
 
 # Check if number given is an integer
 
