@@ -11,9 +11,11 @@ import Tkinter, Tkconstants, tkFileDialog, os
 # Ask to user directory containing music
 
 
-def get_dirname():
+# Function requiring directory to user
+# Variable 'dir' created to personalize the GUI text
+def get_dirname(dir):
     Tk().withdraw()
-    dirname = tkFileDialog.askdirectory(initialdir=os.getcwd(),title='Please select a directory containing your music')
+    dirname = tkFileDialog.askdirectory(initialdir=os.getcwd(),title='Please select '+dir)
     if len(dirname) > 0:
         print ("You chose %s" % dirname)
         return dirname
@@ -22,13 +24,21 @@ def get_dirname():
         print ("\nNo directory selected - initializing with %s \n" % os.getcwd())
         return dirname 
 
+# Require 
+dir = "directory containing music"
+dir_input = get_dirname(dir)
 
-get_dirname()
+# It will appear very quick if I don't use the stop function of os, here just for testing
+print 'dir_input is '+dir_input
 
 
-# Check if directory exist (not needed if done with tinker)
 
 # Ask output directory
+# Require 
+dir = "destination directory"
+dir_output = get_dirname(dir)
+
+
 
 # Ask for the number of songs requested
 
