@@ -2,6 +2,7 @@
 
 from Tkinter import *
 from tkSimpleDialog import askstring
+import shutil # copy file
 import Tkinter, tkMessageBox, Tkconstants, tkFileDialog, os
 import Tkinter as tk
 import fnmatch # to search file recursively
@@ -31,7 +32,9 @@ def get_dirname(dir):
 
 dir_input = get_dirname("directory containing music")
 
-#dir_output = get_dirname("destination directory")
+# The output directory should not be contain within the input directory
+# otherwise conflict of same file copied at the sane place will happen
+dir_output = get_dirname("destination directory")
 
 
 # Check if number given is an integer
@@ -77,8 +80,17 @@ def select_random(list_song, nb_song):
     return sub_list
 
 sub_list = select_random(list_song, nb_song)
-print sub_list
+#print sub_list
 
 
 # Copy these files into the output directory
+
+def copy_files(sub_list, dir_output):
+    for i in sub_list:
+        print 'shutil.copy('+i+', '+dir_output+')'
+        shutil.copy(i, dir_output)
+
+
+copy_files(sub_list, dir_output)
+
 
