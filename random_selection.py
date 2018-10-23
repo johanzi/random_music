@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
-
 from Tkinter import *
-import Tkinter, Tkconstants, tkFileDialog, os
+from tkSimpleDialog import askstring
+import Tkinter, tkMessageBox, Tkconstants, tkFileDialog, os
+import Tkinter as tk
 
-# import os, random, sys, Tkinter
 
 ## Layout pseudocode
 
-# Ask to user directory containing music
-
+# Ask to user directory containing music and output directory
 
 # Function requiring directory to user
 # Variable 'dir' created to personalize the GUI text
@@ -25,29 +24,29 @@ def get_dirname(dir):
         print ("\nNo directory selected - initializing with %s \n" % os.getcwd())
         return dirname 
 
-# Require 
-dir = "directory containing music"
+
+#dir = "directory containing music"
 #dir_input = get_dirname(dir)
 
-# It will appear very quick if I don't use the stop function of os, here just for testing
-# print 'dir_input is '+dir_input
-
-# Ask output directory
-# Require 
-dir = "destination directory"
+#dir = "destination directory"
 #dir_output = get_dirname(dir)
 
 
+while True:
 
-# Ask for the number of songs requested
-# Still searching for an easy snippet from the web
-# x = get_song_number()
-# print x
-
-root = Tk()
-Button(root, text="Press here", command=hello).pack()
-root.mainloop()
-
+    try:
+        # Ask for the number of songs requested
+        root = tk.Tk()
+        # show askstring dialog without the Tkinter window
+        root.withdraw()
+        # Get value and check if integer
+        nb_song = int(askstring("Number of songs", ""))
+    except ValueError:
+        tkMessageBox.showerror("Error message", "Value provided is not an integer")
+    else:
+        # Value given is an integer
+        break
+   
 
 # Check if number given is an integer
 
