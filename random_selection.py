@@ -1,10 +1,7 @@
-#!/usr/bin/env python
-
-from Tkinter import *
-from tkSimpleDialog import askstring
 import shutil # copy file
-import Tkinter, tkMessageBox, Tkconstants, tkFileDialog, os
-import Tkinter as tk
+import os # handle search path
+import Tkinter as tk # Create alias for Tkinter
+import tkMessageBox, tkFileDialog, tkSimpleDialog
 import fnmatch # to search file recursively
 import random # Select random songs from a list
 
@@ -19,7 +16,7 @@ import random # Select random songs from a list
 # Variable 'dir' created to personalize the GUI text
 def get_dirname(dir):
     # withdraw removes the default root window displayed by Tk
-    Tk().withdraw()
+    tk.Tk().withdraw()
     dirname = tkFileDialog.askdirectory(initialdir=os.getcwd(), title='Please select '+dir)
     if len(dirname) > 0:
         print ("You chose %s" % dirname)
@@ -29,25 +26,20 @@ def get_dirname(dir):
         print ("\nNo directory selected - initializing with %s \n" % os.getcwd())
         return dirname 
 
-
-dir_input = get_dirname("directory containing music")
-
 # The output directory should not be contain within the input directory
 # otherwise conflict of same file copied at the sane place will happen
-dir_output = get_dirname("destination directory")
 
 
+
+# Ask for the number of songs requested
 # Check if number given is an integer
-
 def get_nb_song():
     while True:
         try:
-            # Ask for the number of songs requested
-            root = tk.Tk()
-            # show askstring dialog without the Tkinter window
-            root.withdraw()
+            # Remove default Tk window
+            tk.Tk().withdraw()
             # Get value and check if integer
-            nb_song = int(askstring("Number of songs", ""))
+            nb_song = int(tkSimpleDialog.askstring("Number of songs", ""))
         except ValueError:
             tkMessageBox.showerror("Error message", "Value provided is not an integer")
         else:
@@ -55,7 +47,6 @@ def get_nb_song():
             break
     return nb_song
 
-nb_song = get_nb_song()
 
 # Find mp3 in directory and select a random
 
@@ -69,8 +60,6 @@ def find_mp3(dir_input):
     else:
         return matches
 
-list_song = find_mp3(dir_input)
-
 
 # Get a random selection of x files within the search results
 def select_random(list_song, nb_song):
@@ -79,8 +68,6 @@ def select_random(list_song, nb_song):
     sub_list = random.sample(list_song, nb_song)
     return sub_list
 
-sub_list = select_random(list_song, nb_song)
-#print sub_list
 
 
 # Copy these files into the output directory
@@ -91,6 +78,15 @@ def copy_files(sub_list, dir_output):
         shutil.copy(i, dir_output)
 
 
+dir_input = get_dirname("directory containing music")
+
+dir_output = get_dirname("destination directory")
+
+list_song = find_mp3(dir_input)
+
+nb_song = get_nb_song()
+
+sub_list = select_random(list_song, nb_song)
+#print sub_list
+
 copy_files(sub_list, dir_output)
-
-
