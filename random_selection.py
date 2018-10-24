@@ -1,3 +1,4 @@
+import sys
 import shutil # copy file
 import os # handle search path
 import Tkinter as tk # Create alias for Tkinter
@@ -94,18 +95,26 @@ def copy_files(sub_list, dir_output):
                     break
                 ii += 1
         
-dir_input = get_dirname("directory containing music")
-#dir_input = "C:/Users/iblis/Documents/test_music"
 
-dir_output = get_dirname("destination directory")
-#dir_output = "C:/Users/iblis/Documents/output_dir_music"
+def main():
 
-list_song = find_mp3(dir_input)
+    dir_input = get_dirname("directory containing music")
+    #dir_input = "C:/Users/iblis/Documents/test_music"
 
-nb_song = get_nb_song()
-#nb_song = int(5)
+    dir_output = get_dirname("destination directory")
+    #dir_output = "C:/Users/iblis/Documents/output_dir_music"
 
-sub_list = select_random(list_song, nb_song)
-#print sub_list
+    list_song = find_mp3(dir_input)
 
-copy_files(sub_list, dir_output)
+    nb_song = get_nb_song()
+    #nb_song = int(5)
+
+    sub_list = select_random(list_song, nb_song)
+    #print sub_list
+
+    copy_files(sub_list, dir_output)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
