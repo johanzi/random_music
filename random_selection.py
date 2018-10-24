@@ -74,8 +74,25 @@ def select_random(list_song, nb_song):
 
 def copy_files(sub_list, dir_output):
     for i in sub_list:
-        print 'shutil.copy('+i+', '+dir_output+')'
-        shutil.copy(i, dir_output)
+        # Check if file name exists in dir_output
+        file_name = os.path.basename(i)
+        file_name = os.path.join(dir_output, file_name)
+
+        if not os.path.exists(file_name):
+            print 'shutil.copy('+i+', '+file_name+')'
+            #shutil.copy(i, dir_output)
+        else:
+            i = 1
+            while True:
+                file_name = os.path.basename(i)
+                file_name = os.path.splitext(file_name)[0])
+                file_name = os.path.join(dir_output, file_name + "_" + str(i) + ".mp3")
+                if not os.path.exists(file_name):
+                    print 'shutil.copy('+i+', '+file_name+')'
+                    #shutil.copy(i, dir_output)
+                    break
+                i += 1
+        
 
 
 dir_input = get_dirname("directory containing music")
