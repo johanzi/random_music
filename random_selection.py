@@ -80,17 +80,16 @@ def copy_files(sub_list, dir_output):
         file_name = os.path.join(dir_output, file_name)
 
         if not os.path.exists(file_name):
-            print 'shutil.copy('+i+', '+file_name+')'
+            #print 'shutil.copy('+i.encode('utf-8')+', '+file_name+')'
             shutil.copy(i, dir_output)
         else:
             ii = 1
             while True:
                 file_name = os.path.basename(i)
-                print file_name
                 file_name = os.path.splitext(file_name)[0]
                 file_name = os.path.join(dir_output, file_name + "_" + str(ii) + ".mp3")
                 if not os.path.exists(file_name):
-                    print 'shutil.copy('+i+', '+file_name+')'
+                    #print 'shutil.copy('+i.encode('utf-8')+', '+file_name+')'
                     shutil.copy(i, file_name)
                     break
                 ii += 1
@@ -98,16 +97,16 @@ def copy_files(sub_list, dir_output):
 
 def main():
 
-    dir_input = get_dirname("directory containing music")
-    #dir_input = "C:/Users/iblis/Documents/test_music"
+    #dir_input = get_dirname("directory containing music")
+    dir_input = "C:/Users/iblis/Documents/test_music"
 
-    dir_output = get_dirname("destination directory")
-    #dir_output = "C:/Users/iblis/Documents/output_dir_music"
+    #dir_output = get_dirname("destination directory")
+    dir_output = "C:/Users/iblis/Documents/output_dir_music"
 
     list_song = find_mp3(dir_input)
 
-    nb_song = get_nb_song()
-    #nb_song = int(5)
+    #nb_song = get_nb_song()
+    nb_song = int(5)
 
     sub_list = select_random(list_song, nb_song)
     #print sub_list
