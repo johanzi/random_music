@@ -5,6 +5,7 @@ import Tkinter as tk # Create alias for Tkinter
 import tkMessageBox, tkFileDialog, tkSimpleDialog, ttk
 import fnmatch # to search file recursively
 import random # Select random songs from a list
+import time
 
 def progress_bar():
     # Create root window (master widget)
@@ -31,7 +32,11 @@ def progress_bar():
     root.mainloop()
 
 # I would use this function for the copying of the mp3 file
-def progress_bar_determinate():
+# Since Tkinter uses the main thread, I cannot run the window and perform
+# my copying of file in the same time on the same thread.
+# I need to use queue system (https://stackoverflow.com/questions/15323574/how-to-connect-a-progress-bar-to-a-function)
+
+def progress_bar_determinate(max_value):
     # Create root window (master widget)
     root = tk.Tk()
     frame = ttk.Frame(root)
@@ -41,7 +46,7 @@ def progress_bar_determinate():
     frame.winfo_toplevel().title("Please wait")
 
     # Create progress bar window and make horizontal, inderteminate, and with length 200 pixels
-    pb_hd = ttk.Progressbar(frame, orient='horizontal', mode='determinate', length=200)
+    pb_hd = ttk.Progressbar(frame, orient='horizontal', mode='determinate', length=200, maximum=max_value)
 
     # Create cancel button on the right of the progress bar. If clicked, the root window is closed
     #cancel_button = tk.Button(frame, text="Cancel", fg="black", command=root.destroy)
@@ -51,24 +56,25 @@ def progress_bar_determinate():
     # Locate position of the progress bar within the window
     pb_hd.pack(expand=True, fill=tk.BOTH, side=tk.TOP)
 
-    pb_hd["maximum"]=(100)
+    #pb_hd["maximum"]=(max_value)
 
     def progress(currentValue):
         pb_hd["value"]=currentValue
+
+    #currentValue=0
+    #pb_hd["value"]=currentValue
+
+    for i in range(max_value+1):
+        #pb_hd.after(10, progress(currentValue))
+        pb_hd["value"]=i # Go quicker than using the progress function (check doc https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Progressbar.step)
+        pb_hd.update() # Force an update of the GUI
+        #currentValue += 1
+        time.sleep(1)
+
     
-    currentValue=0
-    pb_hd["value"]=currentValue
-    for i in range(100):
-        pb_hd.after(10, progress(currentValue))
-        #pb_hd.update() # Force an update of the GUI
-        currentValue += 1
-
-
-    
-
     # Launch Tkinter
     root.mainloop()
-
-progress_bar_determinate()
+    
+progress_bar_determinate(5)
 
 #progress_bar()
