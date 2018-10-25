@@ -93,18 +93,33 @@ def copy_files(sub_list, dir_output):
                     break
                 ii += 1
 
+    root.mainloop()
+    
+    
 # Loading progress
 # Check doc https://docs.python.org/3/library/tkinter.ttk.html
 # https://github.com/lbgists/ttk-progressbar-example.py/blob/master/ttk-progressbar-example.py
 def progress_bar():
+    # Create root window (master widget)
     root = tk.Tk()
-    ft = ttk.Frame()
-    ft.pack(expand=True, fill=Tkinter.BOTH, side=Tkinter.TOP)
-    pb_hd = ttk.Progressbar(ft, orient='horizontal', mode='determinate')
+    frame = ttk.Frame(root)
+    frame.pack(expand=True, fill=tk.BOTH, side=tk.TOP)
 
-    pb_hd.pack(expand=True, fill=Tkinter.BOTH, side=Tkinter.TOP)
-    pb_hd.start(50)
+    # Title of the window
+    frame.winfo_toplevel().title("Please wait")
 
+    # Create progress bar window and make horizontal, inderteminate, and with length 200 pixels
+    pb_hd = ttk.Progressbar(frame, orient='horizontal', mode='indeterminate', length=200)
+
+    # Create cancel button on the right of the progress bar. If clicked, the program is killed
+    cancel_button = tk.Button(frame, text="Cancel", fg="black", command=exit)
+    cancel_button.pack(side=tk.RIGHT )
+
+    # Locate position of the progress bar within the window
+    pb_hd.pack(expand=True, fill=tk.BOTH, side=tk.TOP)
+    pb_hd.start(1)
+
+    # Launch Tkinter
     root.mainloop()
 
 
