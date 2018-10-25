@@ -2,7 +2,7 @@ import sys
 import shutil # copy file
 import os # handle search path
 import Tkinter as tk # Create alias for Tkinter
-import tkMessageBox, tkFileDialog, tkSimpleDialog
+import tkMessageBox, tkFileDialog, tkSimpleDialog, ttk
 import fnmatch # to search file recursively
 import random # Select random songs from a list
 
@@ -92,7 +92,21 @@ def copy_files(sub_list, dir_output):
                     shutil.copy(i, file_name)
                     break
                 ii += 1
-        
+
+# Loading progress
+# Check doc https://docs.python.org/3/library/tkinter.ttk.html
+# https://github.com/lbgists/ttk-progressbar-example.py/blob/master/ttk-progressbar-example.py
+def progress_bar():
+    root = tk.Tk()
+    ft = ttk.Frame()
+    ft.pack(expand=True, fill=Tkinter.BOTH, side=Tkinter.TOP)
+    pb_hd = ttk.Progressbar(ft, orient='horizontal', mode='determinate')
+
+    pb_hd.pack(expand=True, fill=Tkinter.BOTH, side=Tkinter.TOP)
+    pb_hd.start(50)
+
+    root.mainloop()
+
 
 def main():
     # Get the two directories from user
