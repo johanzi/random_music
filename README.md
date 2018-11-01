@@ -9,7 +9,9 @@ If you find time consuming the transfer of mp3 music files from your PC to your 
 Click on the script file or launch it directly from a terminal such as:
 
 ´´´
+
 python random_music.py
+
 ´´´
 
 A window should pop up and prompt you to choose the directory containing your music.
