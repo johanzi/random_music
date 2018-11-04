@@ -1,21 +1,24 @@
 import sys
-import shutil # copy files
 import os # handle search path
+
+# Check if script run with Python3
+if sys.version_info[0] < 3:
+    print("This script must be using Python 3")
+    os.system("pause")
+
+import shutil # copy files
 import tkinter as tk # Create alias for Tkinter
-import tkinter.messagebox, tkinter.filedialog, tkinter.simpledialog, tkinter.ttk
+from tkinter import messagebox, filedialog, simpledialog
 import fnmatch # to search file recursively
 import random # Select random songs from a list
-from tqdm import tqdm
-
-# This script runs on Python2.7
-
+from tqdm import tqdm # Get terminal progress bar
 
 # Function requiring directory to user
 # Variable 'dir' created to personalize the GUI text
 def get_dirname(dir):
     # withdraw removes the default root window displayed by Tk
     tk.Tk().withdraw()
-    dirname = tkinter.filedialog.askdirectory(initialdir=os.getcwd(), title='Please select '+ dir)
+    dirname = tk.filedialog.askdirectory(initialdir=os.getcwd(), title='Please select '+ dir)
     # Exit in case user clicks 'cancel'
     if dirname:
         return dirname
@@ -33,7 +36,7 @@ def get_nb_song():
     tk.Tk().withdraw()
     # Get value and check if integer (first argument is the name of the window, second is
     # the message near the entry box)
-    nb_song = tkinter.simpledialog.askstring("", "Number of songs")
+    nb_song = tk.simpledialog.askstring("", "Number of songs")
     # Exit if user clicks 'cancel'
     if not nb_song:
         sys.exit()
@@ -41,7 +44,7 @@ def get_nb_song():
     try:
         nb_song = int(nb_song)
     except ValueError:
-        tkinter.messagebox.showerror(title="Error message", message="Value provided is not an integer")
+        tk.messagebox.showerror(title="Error message", message="Value provided is not an integer")
         sys.exit()
     # If variable is an integer, return it
     return nb_song
@@ -56,7 +59,7 @@ def find_mp3(dir_input):
         for filename in fnmatch.filter(filenames, '*.mp3'):
             matches.append(os.path.join(root, filename))
     if len(matches) == 0:
-        tkinter.messagebox.showerror(title="Error message", message="No mp3 files were found in "+dir_input)
+        tk.messagebox.showerror(title="Error message", message="No mp3 files were found in "+dir_input)
         sys.exit()
     else:
         return matches
@@ -108,7 +111,7 @@ def main():
 
     # Test if dir_input and dir_output are different
     if dir_input == dir_output:
-        tkinter.messagebox.showerror(title="Error", message="Chosen source and destination directories are identical, please choose different directories")
+        tk.messagebox.showerror(title="Error", message="Chosen source and destination directories are identical, please choose different directories")
         sys.exit()
 
     nb_song = get_nb_song()
