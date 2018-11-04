@@ -8,7 +8,7 @@ if sys.version_info[0] < 3:
 
 import shutil # copy files
 import tkinter as tk # Create alias for Tkinter
-from tkinter import messagebox, filedialog, simpledialog
+from tkinter import messagebox, filedialog, simpledialog # Import from tkinter needed modules
 import fnmatch # to search file recursively
 import random # Select random songs from a list
 
@@ -61,7 +61,15 @@ def get_nb_song():
 # TODO: time length of the code for large folders
 def find_mp3(dir_input):
     matches = []
-    for root, dirnames, filenames in os.walk(dir_input):
+
+    # If module tqdm exists, use it to assess progress, otherwise
+    # do without it
+    if tqdm:
+        range_files = tqdm(os.walk(dir_input), unit="files")
+    else:
+        range_files = os.walk(dir_input)
+    
+    for root, dirnames, filenames in range_files:
         for filename in fnmatch.filter(filenames, '*.mp3'):
             matches.append(os.path.join(root, filename))
     if len(matches) == 0:
@@ -85,7 +93,7 @@ def copy_files(sub_list, dir_output):
     # If module tqdm exists, use it to assess progress, otherwise
     # do without it
     if tqdm:
-        range_files = tqdm(sub_list, total=len(sub_list))
+        range_files = tqdm(sub_list, total=len(sub_list), unit="files")
     else:
         range_files = sub_list
     
