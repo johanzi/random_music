@@ -6,6 +6,8 @@ If you find time consuming the transfer of mp3 music files from your PC to your 
 
 ## Usage
 
+This script is compatible with Python3.
+
 Click on the script file or launch it directly from a terminal such as:
 
 ´´´
@@ -17,5 +19,8 @@ python random_music.py
 A window should pop up and prompt you to choose the directory containing your music.
 A second window will ask you to choose the directory in which the files will be transfered.
 The third and last window will ask how many mp3 files you want to transfer. Click OK and wait.
+
+*NB: In Windows, check that Python3 executable is used to run the script*
+
 
 
