@@ -1,5 +1,4 @@
 import sys
-import time
 import shutil # copy files
 import os # handle search path
 import tkinter as tk # Create alias for Tkinter
@@ -42,7 +41,7 @@ def get_nb_song():
     try:
         nb_song = int(nb_song)
     except ValueError:
-        tkinter.messagebox.showerror("Error message", "Value provided is not an integer")
+        tkinter.messagebox.showerror(title="Error message", message="Value provided is not an integer")
         sys.exit()
     # If variable is an integer, return it
     return nb_song
@@ -57,7 +56,7 @@ def find_mp3(dir_input):
         for filename in fnmatch.filter(filenames, '*.mp3'):
             matches.append(os.path.join(root, filename))
     if len(matches) == 0:
-        tkinter.messagebox.showerror("Error message", "No mp3 files were found in "+dir_input)
+        tkinter.messagebox.showerror(title="Error message", message="No mp3 files were found in "+dir_input)
         sys.exit()
     else:
         return matches
@@ -76,8 +75,7 @@ def select_random(list_song, nb_song):
 # Check if file with same name is already present, it yes, add suffix
 def copy_files(sub_list, dir_output):
 
-    for i in sub_list:
-        time.sleep(1)
+    for i in tqdm(sub_list, total=len(sub_list)):
         # Check if file name exists in dir_output
         file_name = os.path.basename(i)
         file_name = os.path.join(dir_output, file_name)
@@ -110,7 +108,7 @@ def main():
 
     # Test if dir_input and dir_output are different
     if dir_input == dir_output:
-        tkinter.messagebox.showerror("Chosen source and destination directories are identical, please choose different directories")
+        tkinter.messagebox.showerror(title="Error", message="Chosen source and destination directories are identical, please choose different directories")
         sys.exit()
 
     nb_song = get_nb_song()
