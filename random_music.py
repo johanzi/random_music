@@ -11,7 +11,14 @@ import tkinter as tk # Create alias for Tkinter
 from tkinter import messagebox, filedialog, simpledialog
 import fnmatch # to search file recursively
 import random # Select random songs from a list
-from tqdm import tqdm # Get terminal progress bar
+
+# Check if user has tqdm installed
+try:
+    from tqdm import tqdm # Get terminal progress bar
+except ImportError:
+    print("tqdm module is not installed, do without it")
+    print("If progress bar wished, do 'pip install tqdm --user' and rerun the script")
+    pass
 
 # Function requiring directory to user
 # Variable 'dir' created to personalize the GUI text
@@ -27,7 +34,6 @@ def get_dirname(dir):
 
 # The output directory should not be contain within the input directory
 # otherwise conflict of same file copied at the sane place will happen
-
 
 # Ask for the number of songs requested
 # Check if number given is an integer
@@ -72,13 +78,18 @@ def select_random(list_song, nb_song):
     sub_list = random.sample(list_song, nb_song)
     return sub_list
 
-
-
 # Copy these files into the output directory
 # Check if file with same name is already present, it yes, add suffix
 def copy_files(sub_list, dir_output):
 
-    for i in tqdm(sub_list, total=len(sub_list)):
+    # If module tqdm exists, use it to assess progress, otherwise
+    # do without it
+    if tqdm:
+        range_files = tqdm(sub_list, total=len(sub_list))
+    else:
+        range_files = sub_list
+    
+    for i in range_files:
         # Check if file name exists in dir_output
         file_name = os.path.basename(i)
         file_name = os.path.join(dir_output, file_name)
@@ -99,7 +110,6 @@ def copy_files(sub_list, dir_output):
                     break
                 ii += 1
     
- 
 def main():
     # Get the two directories from user
 
@@ -128,7 +138,6 @@ def main():
 
     # Copy element of the sublist in output directory
     copy_files(sub_list, dir_output)
-
 
 
 if __name__ == "__main__":
