@@ -2,12 +2,11 @@ import sys
 import time
 import shutil # copy files
 import os # handle search path
-import Tkinter as tk # Create alias for Tkinter
-import tkMessageBox, tkFileDialog, tkSimpleDialog, ttk
+import tkinter as tk # Create alias for Tkinter
+import tkinter.messagebox, tkinter.filedialog, tkinter.simpledialog, tkinter.ttk
 import fnmatch # to search file recursively
 import random # Select random songs from a list
-import threading # Allow to run tkinter and copy files in the same time (progress bar implementation)
-import Queue
+from tqdm import tqdm
 
 # This script runs on Python2.7
 
@@ -17,7 +16,7 @@ import Queue
 def get_dirname(dir):
     # withdraw removes the default root window displayed by Tk
     tk.Tk().withdraw()
-    dirname = tkFileDialog.askdirectory(initialdir=os.getcwd(), title='Please select '+dir)
+    dirname = tkinter.filedialog.askdirectory(initialdir=os.getcwd(), title='Please select '+ dir)
     # Exit in case user clicks 'cancel'
     if dirname:
         return dirname
@@ -35,7 +34,7 @@ def get_nb_song():
     tk.Tk().withdraw()
     # Get value and check if integer (first argument is the name of the window, second is
     # the message near the entry box)
-    nb_song = tkSimpleDialog.askstring("", "Number of songs")
+    nb_song = tkinter.simpledialog.askstring("", "Number of songs")
     # Exit if user clicks 'cancel'
     if not nb_song:
         sys.exit()
@@ -43,7 +42,7 @@ def get_nb_song():
     try:
         nb_song = int(nb_song)
     except ValueError:
-        tkMessageBox.showerror("Error message", "Value provided is not an integer")
+        tkinter.messagebox.showerror("Error message", "Value provided is not an integer")
         sys.exit()
     # If variable is an integer, return it
     return nb_song
@@ -58,7 +57,7 @@ def find_mp3(dir_input):
         for filename in fnmatch.filter(filenames, '*.mp3'):
             matches.append(os.path.join(root, filename))
     if len(matches) == 0:
-        tkMessageBox.showerror("Error message", "No mp3 files were found in "+dir_input)
+        tkinter.messagebox.showerror("Error message", "No mp3 files were found in "+dir_input)
         sys.exit()
     else:
         return matches
@@ -77,75 +76,41 @@ def select_random(list_song, nb_song):
 # Check if file with same name is already present, it yes, add suffix
 def copy_files(sub_list, dir_output):
 
-    # Create root window (master widget)
-    root = tk.Tk()
-    frame = ttk.Frame(root)
-    frame.pack(expand=True, fill=tk.BOTH, side=tk.TOP)
-
-    # Title of the window
-    frame.winfo_toplevel().title("Please wait")
-
-    # Create progress bar window and make horizontal, inderteminate, and with length 200 pixels
-    pb_hd = ttk.Progressbar(frame, orient='horizontal', mode='indeterminate', length=200)
-
-    # Create cancel button on the right of the progress bar. If clicked, the root window is closed
-    cancel_button = tk.Button(frame, text="Cancel", fg="black", command=exit)
-    cancel_button.pack(side=tk.RIGHT )
-
-    pb_hd.pack(expand=True, fill=tk.BOTH, side=tk.TOP)
-    pb_hd.start(1)
-
-    def copy():
-        for i in sub_list:
-            time.sleep(1)
-            # Check if file name exists in dir_output
-            file_name = os.path.basename(i)
-            file_name = os.path.join(dir_output, file_name)
-
-            if not os.path.exists(file_name):
-                shutil.copy(i, dir_output)
-
-            else:
-                # Initialize the suffix
-                ii = 1
-                # While loop until the name of the file is unique
-                while True:
-                    file_name = os.path.basename(i)
-                    file_name = os.path.splitext(file_name)[0]
-                    file_name = os.path.join(dir_output, file_name + "_" + str(ii) + ".mp3")
-                    if not os.path.exists(file_name):
-                        shutil.copy(i, file_name)
-                        break
-                    ii += 1
-        
-    #ready = threading.Event()
-    #program = copy(
-    # Launch copy() in a separate thread
-    thread1 = threading.Thread(target=copy)
-    #thread1.daemon = True
-    thread1.start()
-
-    string = "Running "
-    while thread1.is_alive():
+    for i in sub_list:
         time.sleep(1)
-        string = string + "."
-        print string
-    #root.destroy()
+        # Check if file name exists in dir_output
+        file_name = os.path.basename(i)
+        file_name = os.path.join(dir_output, file_name)
 
-    root.mainloop()
+        if not os.path.exists(file_name):
+            shutil.copy(i, dir_output)
+
+        else:
+            # Initialize the suffix
+            ii = 1
+            # While loop until the name of the file is unique
+            while True:
+                file_name = os.path.basename(i)
+                file_name = os.path.splitext(file_name)[0]
+                file_name = os.path.join(dir_output, file_name + "_" + str(ii) + ".mp3")
+                if not os.path.exists(file_name):
+                    shutil.copy(i, file_name)
+                    break
+                ii += 1
     
+ 
 def main():
     # Get the two directories from user
 
-    #dir_input = get_dirname("directory containing music")
+    dir_input = get_dirname("directory containing music")
     #dir_input = "C:/Users/iblis/Documents/test_music"
 
-    #dir_output = get_dirname("destination directory")
+    dir_output = get_dirname("destination directory")
     #dir_output = "C:/Users/iblis/Documents/output_dir_music"
 
     # Test if dir_input and dir_output are different
     if dir_input == dir_output:
-        tkMessageBox.showerror("Chosen source and destination directories are identical, please choose different directories")
+        tkinter.messagebox.showerror("Chosen source and destination directories are identical, please choose different directories")
         sys.exit()
 
     nb_song = get_nb_song()
@@ -164,9 +129,8 @@ def main():
     copy_files(sub_list, dir_output)
 
 
-    #sys.exit()
-
 
 if __name__ == "__main__":
     main()
+    sys.exit()
 
