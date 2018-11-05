@@ -59,6 +59,8 @@ def get_nb_song():
 # Find mp3 in directory and select a random
 # This step may take time in large directory.
 # TODO: time length of the code for large folders
+# TODO: the current setting of tqdm just displays the number of directories
+# modify to display total number of files
 def find_mp3(dir_input):
     matches = []
 
