@@ -64,8 +64,8 @@ def find_mp3(dir_input):
 
     # If module tqdm exists, use it to assess progress, otherwise
     # do without it
-    if tqdm:
-        range_files = tqdm(os.walk(dir_input), unit="files")
+    if 'tqdm' in sys.modules:
+        range_files = tqdm(os.walk(dir_input), unit="files", ascii=True, desc="Total number files found")
     else:
         range_files = os.walk(dir_input)
     
@@ -92,8 +92,8 @@ def copy_files(sub_list, dir_output):
 
     # If module tqdm exists, use it to assess progress, otherwise
     # do without it
-    if tqdm:
-        range_files = tqdm(sub_list, total=len(sub_list), unit="files")
+    if 'tqdm' in sys.modules:
+        range_files = tqdm(sub_list, total=len(sub_list), unit="files", ascii=True, desc="mp3 files copied")
     else:
         range_files = sub_list
     
