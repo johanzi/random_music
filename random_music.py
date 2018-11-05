@@ -62,18 +62,20 @@ def get_nb_song():
 # TODO: the current setting of tqdm just displays the number of directories
 # modify to display total number of files
 def find_mp3(dir_input):
+    
     matches = []
 
     # If module tqdm exists, use it to assess progress, otherwise
     # do without it
-    if 'tqdm' in sys.modules:
-        range_files = tqdm(os.walk(dir_input), unit="files", ascii=True, desc="Total number files found")
-    else:
-        range_files = os.walk(dir_input)
-    
-    for root, dirnames, filenames in range_files:
-        for filename in fnmatch.filter(filenames, '*.mp3'):
+   
+    for root, dirnames, filenames in os.walk(dir_input):
+        if 'tqdm' in sys.modules:
+            range_files = tqdm(fnmatch.filter(filenames, '*.mp3'), ascii=True, desc="Total number files found", unit="files")
+        else:
+            range_files = fnmatch.filter(filenames, '*.mp3'),
+        for filename in range_files: 
             matches.append(os.path.join(root, filename))
+    
     if len(matches) == 0:
         tk.messagebox.showerror(title="Error message", message="No mp3 files were found in "+dir_input)
         sys.exit()
@@ -123,11 +125,11 @@ def copy_files(sub_list, dir_output):
 def main():
     # Get the two directories from user
 
-    dir_input = get_dirname("directory containing music")
-    #dir_input = "C:/Users/iblis/Documents/test_music"
+    #dir_input = get_dirname("directory containing music")
+    dir_input = "C:/Users/iblis/Documents/test_music"
 
-    dir_output = get_dirname("destination directory")
-    #dir_output = "C:/Users/iblis/Documents/output_dir_music"
+    #dir_output = get_dirname("destination directory")
+    dir_output = "C:/Users/iblis/Documents/output_dir_music"
 
     # Test if dir_input and dir_output are different
     if dir_input == dir_output:
