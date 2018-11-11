@@ -39,24 +39,21 @@ class random_music():
         self.frame.grid()
 
 
-        ################# MENU ##########################
+        ##################### MENU ##########################
         
         # Create a menu bar with the label "Menu" and submenus "Help" and "Quit"
         self.menubar = Menu(self.root)
         self.root['menu'] = self.menubar
-
+        
         # Create submenus (need to be done first)
         self.menu_file = Menu(self.menubar)
-        self.menu_file.add_command(label="Quit", command=self.quit)
         self.menu_file.add_command(label="Help", command=self.display_help)
-
+        self.menu_file.add_command(label="Quit", command=self.quit)
+        
         # Give label to menu name
         self.menubar.add_cascade(menu=self.menu_file, label='Menu')
 
-
-
-
-        
+       
         ################# INPUT AND OUTPUT DIRECTORIES ##########################
         
         # Create buttons to select the directories
@@ -114,6 +111,8 @@ class random_music():
         self.add_button = Button(self.root, text="OK", command= lambda:[self.update(), self.main()])
         self.add_button.grid(row=2, column=2)
         
+        
+        
         ################## LAUNCH FUNCTIONS ###########################
 
         # All the inputs are there, now we can use the different functions needed
@@ -125,13 +124,13 @@ class random_music():
 
         if self.nb_songs == None:
             sys.exit(messagebox.showerror("Help window", "a Tk MessageBox"))
-
+        
+        # Get the return of select_random wich is tuple of 2 items
         tuple = self.select_random(self.list_songs, self.nb_songs)
-        
         self.sub_list = tuple[0]
-        
         self.nb_songs = tuple[1]
         
+        # Copy the files to output directory
         self.copy_files(self.sub_list, self.folder_output.get())
         
         # Display info message after copying
@@ -150,19 +149,19 @@ class random_music():
         folder.set(filename)
 
 
-    # Still in development
     def check_directories(self):
-        # Check if output and input directories are different (does not work if not called in the GUI)
+        """
+        Check if output and input directories are different (does not work if not called in the GUI)
+        """
         if self.folder_input.get() and self.folder_output.get():
             if self.folder_input.get() == self.folder_output.get():
                 messagebox.showerror("Error message", "Input and output directories are similar, change one path")
   
+  
     def validate(self, new_text):
         """
-        Test if user input is an integer
+        Test if user input is an integer and if superior to 0
         """
-        #if not new_text: 
-         #   messagebox.showerror("Error message", "No number of songs indicated")
         try:
             self.entered_number = int(new_text)
             self.entered_number > 0
@@ -172,6 +171,9 @@ class random_music():
 
 
     def update(self):
+        """
+        Update values of nb_songs by the user input
+        """
         if not self.entered_number:
             messagebox.showerror("Error message", "No number of songs indicated")
         else:
@@ -179,6 +181,10 @@ class random_music():
 
         
     def find_mp3(self, dir_input):
+        """
+        Get recursively all mp3 files contained in the input_directory
+        and returns a list
+        """
         matches = []
         for root, dirnames, filenames in os.walk(dir_input):
             for filename in fnmatch.filter(filenames, '*.mp3'):
@@ -190,15 +196,28 @@ class random_music():
 
 
     def select_random(self, list_songs, nb_songs):
+        """
+        Select randomly nb_songs mp3 files from list list_songs
+        Return a tuple with the files selected and the actual
+        number of songs (adjusted nb_songs)
+        """
         if len(list_songs) < nb_songs:
             nb_songs = len(list_songs)
+        
         sub_list = random.sample(list_songs, nb_songs)
+        
         return sub_list, nb_songs
 
 
     # Copy these files into the output directory
     # Check if file with same name is already present, it yes, add suffix
     def copy_files(self, sub_list, dir_output):
+        """
+        Copy the selected mp3 files into dir_output. If dir_output
+        already contains a file, the file is renamed by adding a number 
+        suffix and this suffix is incremented as long as the file does 
+        not get a unique name.
+        """
         for i in sub_list:
             # Check if file name exists in dir_output
             file_name = os.path.basename(i)
@@ -221,10 +240,16 @@ class random_music():
                     ii += 1
 
     def display_help(self):
+        """
+        Display help window from the menu
+        """
         messagebox.showinfo("Help window", "This software allows you to copy a random set of a chosen number of mp3 files from an input directory (e.g. hard disk) to an output directory (e.g. mp3 player). The software will search for all mp3 files in the input directory and all subdirectories, then select the number of files chosen by the user to copy into the output directory.\n\nAuthor: Johan Zicola")
 
     
     def quit(self):
+        """
+        Quit the application
+        """
         self.frame.quit()   
 
 
