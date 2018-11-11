@@ -74,7 +74,8 @@ class random_music():
         # Do not put () beside browse_button unless it is used with lambda
         # Note that if no argument are needed for browse_button, I could use command=self.browse_button
         # However, if I need to provide an argument, I need to use lambda:
-        browse_button_input = Button(text="Browse", command=lambda: self.browse_button(self.folder_input))
+        # 2 functions can be given in lambda by using []
+        browse_button_input = Button(text="Browse", command=lambda: [self.browse_button(self.folder_input), self.check_directories()])
         browse_button_input.grid(row=0, column=1)
 
         # Initialize folder_output variable
@@ -87,9 +88,6 @@ class random_music():
         lbl3 = Label(master=self.root, textvariable=self.folder_output)
         lbl3.grid(row=1, column=2)
 
-
-        # This time, add a second function which verifies if the 2 directories are different. Error message
-        # if not. 2 functions can be given in lambda by using []
         browse_button_output = Button(text="Browse", command=lambda:[self.browse_button(self.folder_output), self.check_directories()])
         browse_button_output.grid(row=1, column=1)
 
@@ -137,10 +135,10 @@ class random_music():
     # Still in development
     def check_directories(self):
         # Check if output and input directories are different (does not work if not called in the GUI)
-        print(self.folder_input.get())
-        print(self.folder_output.get())
-        if self.folder_input.get() == self.folder_output.get():
-            messagebox.showerror("Error message", "Input and output directories are similar, change one path")
+        if self.folder_input.get() and self.folder_output.get():
+
+            if self.folder_input.get() == self.folder_output.get():
+                messagebox.showerror("Error message", "Input and output directories are similar, change one path")
 
 
 
