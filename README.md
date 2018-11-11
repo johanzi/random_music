@@ -16,6 +16,9 @@ python random_music.py
 
 ´´´
 
+## Notes
+The GUI was developed using tkinter. Several widgets are used within the script and constitute an example on how using tkinter to develop a simple.
+
 # Authors
 * **Johan Zicola** - [johanzi](https://github.com/johanzi)
 
