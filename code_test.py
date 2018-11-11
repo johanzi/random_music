@@ -3,6 +3,7 @@ import time
 import shutil # copy files
 import os # handle search path
 import fnmatch # to search file recursively
+import random
 
 # Make Tkinter working on python2 and 3
 try:
@@ -111,17 +112,27 @@ class random_music():
         self.entry.grid(row=2, column=1)
         
         # Add OK button
-        self.add_button = Button(self.root, text="OK", command=self.update)
+        self.add_button = Button(self.root, text="OK", command= lambda:[self.update(), self.main() ])
         self.add_button.grid(row=2, column=2)
         
         ################## LAUNCH FUNCTIONS ###########################
 
         # All the inputs are there, now we can use the different functions needed
 
-        
-        #list_song = find_mp3(dir_input)
-        
+        # I need to add a last button to initiate the program and call all functions
 
+    def main(self):
+
+        self.list_songs = self.find_mp3(self.folder_input.get())
+
+        if self.nb_songs == None:
+            sys.exit(messagebox.showerror("Help window", "a Tk MessageBox"))
+
+        self.sub_list = self.select_random(self.list_songs, self.nb_songs)
+
+        self.copy_files(self.sub_list, self.folder_output.get())
+        
+        
         
     def browse_button(self, folder):
         """
@@ -174,7 +185,37 @@ class random_music():
             sys.exit()
         else:
             return matches
-        
+
+    def select_random(self, list_songs, nb_songs):
+        if len(list_songs) < nb_songs:
+            nb_songs = len(list_songs)
+        sub_list = random.sample(list_songs, nb_songs)
+        return sub_list
+
+
+    # Copy these files into the output directory
+    # Check if file with same name is already present, it yes, add suffix
+    def copy_files(self, sub_list, dir_output):
+        for i in sub_list:
+            # Check if file name exists in dir_output
+            file_name = os.path.basename(i)
+            file_name = os.path.join(dir_output, file_name)
+
+            if not os.path.exists(file_name):
+                shutil.copy(i, dir_output)
+
+            else:
+                # Initialize the suffix
+                ii = 1
+                # While loop until the name of the file is unique
+                while True:
+                    file_name = os.path.basename(i)
+                    file_name = os.path.splitext(file_name)[0]
+                    file_name = os.path.join(dir_output, file_name + "_" + str(ii) + ".mp3")
+                    if not os.path.exists(file_name):
+                        shutil.copy(i, file_name)
+                        break
+                    ii += 1
 
     def display_help(self):
         print(self.folder_input.get())
