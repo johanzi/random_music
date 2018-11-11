@@ -38,7 +38,7 @@ class random_music():
         self.frame.grid()
 
         # Create a menu bar with the label "Menu" and submenus "Help" and "Quit"
-        self.menubar = Menu(root)
+        self.menubar = Menu(self.root)
         self.root['menu'] = self.menubar
 
         # Create submenus (need to be done first)
@@ -56,41 +56,40 @@ class random_music():
         # Check http://effbot.org/tkinterbook/variable.htm
         # These variables will be assigned with set() in browse_button function
         
-        folder_input = StringVar()
+        self.folder_input = StringVar()
 
         # Create text before the button
         lbl0 = Label(master=self.root, text="Choose input directory")
         lbl0.grid(row=0, column=0)
 
-        self.folder_input = StringVar(self.root)
-        
-        lbl1 = Label(master=self.root, textvariable=folder_input)
+        lbl1 = Label(master=self.root, textvariable=self.folder_input)
         lbl1.grid(row=0, column=2)
 
-        # Do not put () beside browse_button
-        browse_button_input = Button(text="Browse", command=self.browse_button)
+        # Do not put () beside browse_button unless it is used with lambda
+        # Note that if no argument are needed for browse_button, I could use command=self.browse_button
+        # However, if I need to provide an argument, I need to use lambda:
+        browse_button_input = Button(text="Browse", command=lambda: self.browse_button(self.folder_input))
         browse_button_input.grid(row=0, column=1)
 
-        #folder_input = StringVar()
+        # Initialize folder_output variable
+        self.folder_output = StringVar()
         
         # Create text before the button
         lbl2 = Label(master=self.root, text="Choose output directory")
         lbl2.grid(row=1, column=0)
 
-        folder_output = StringVar()
-        lbl3 = Label(master=self.root, textvariable=folder_input)
+        lbl3 = Label(master=self.root, textvariable=self.folder_output)
         lbl3.grid(row=1, column=2)
 
-        browse_button_output = Button(text="Browse", command=self.browse_button)
+        browse_button_output = Button(text="Browse", command=lambda: self.browse_button(self.folder_output))
         browse_button_output.grid(row=1, column=1)
 
 
-    def browse_button(self, root):
-
-        global folder_input
-        
+    def browse_button(self, folder):
         filename = filedialog.askdirectory(initialdir=os.getcwd(), title='Please select directory')
-        folder_input.set(filename)
+        #self.folder_input.set(filename)
+        folder.set(filename)
+        
        
 
     def display_help(self):
