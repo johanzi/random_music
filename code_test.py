@@ -11,12 +11,14 @@ try:
     from Tkinter import *
     from ttk import *
     import tkFileDialog as filedialog
+    import tkMessageBox as messagebox
+    
 except ImportError:
     #import tkinter as tk
     #from tkinter.ttk import *
     from tkinter import *
     from tkinter.ttk import *
-    from tkinter import filedialog
+    from tkinter import filedialog, messagebox
 
 
 class random_music():
@@ -37,6 +39,9 @@ class random_music():
         # Choose to use either 'pack' or 'grid' mode to arrange widget in the frame
         self.frame.grid()
 
+
+        ################# MENU ##########################
+        
         # Create a menu bar with the label "Menu" and submenus "Help" and "Quit"
         self.menubar = Menu(self.root)
         self.root['menu'] = self.menubar
@@ -48,14 +53,15 @@ class random_music():
 
         # Give label to menu name
         self.menubar.add_cascade(menu=self.menu_file, label='Menu')
-        
 
+        
+        ################# INPUT AND OUTPUT DIRECTORIES ##########################
+        
         # Create buttons to select the directories
 
         # Create Tkinter variable, call the corresponding constructor
         # Check http://effbot.org/tkinterbook/variable.htm
         # These variables will be assigned with set() in browse_button function
-        
         self.folder_input = StringVar()
 
         # Create text before the button
@@ -81,19 +87,102 @@ class random_music():
         lbl3 = Label(master=self.root, textvariable=self.folder_output)
         lbl3.grid(row=1, column=2)
 
-        browse_button_output = Button(text="Browse", command=lambda: self.browse_button(self.folder_output))
+
+        # This time, add a second function which verifies if the 2 directories are different. Error message
+        # if not. 2 functions can be given in lambda by using []
+        browse_button_output = Button(text="Browse", command=lambda:[self.browse_button(self.folder_output), self.check_directories()])
         browse_button_output.grid(row=1, column=1)
 
 
-    def browse_button(self, folder):
-        filename = filedialog.askdirectory(initialdir=os.getcwd(), title='Please select directory')
-        #self.folder_input.set(filename)
-        folder.set(filename)
+        ################# NUMBER OF SONGS ##########################
+
+        self.nb_songs = 0
+        self.entered_number = 0
         
-       
+        #self.nb_songs = IntVar()
+        
+        # Create label
+        self.label_nb_songs = Label(self.root, text="Number of songs:")
+        self.label_nb_songs.grid(row=2, column=0)
+        
+        # Create entry pannel abnd use a validate command
+        # to verify that then entry is an integer
+        # check http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/entry-validation.html
+        vcmd = self.root.register(self.validate) # we have to wrap the command
+        self.entry = Entry(self.root, validate="key", validatecommand=(vcmd, '%P'))
+        self.entry.grid(row=2, column=1)
+        
+        # Add OK button
+        self.add_button = Button(self.root, text="OK", command=self.update)
+        self.add_button.grid(row=2, column=2)
+        
+        ################## LAUNCH FUNCTIONS ###########################
+
+        # All the inputs are there, now we can use the different functions needed
+
+        
+        #list_song = find_mp3(dir_input)
+        
+
+        
+    def browse_button(self, folder):
+        """
+        ask directory interface which assigns user choice to the argument 'folder'
+        which should be already initialized with 'self.folder - StringVar()'
+        """
+        filename = filedialog.askdirectory(initialdir=os.getcwd(), title='Please select directory')
+        folder.set(filename)
+
+
+    # Still in development
+    def check_directories(self):
+        # Check if output and input directories are different (does not work if not called in the GUI)
+        print(self.folder_input.get())
+        print(self.folder_output.get())
+        if self.folder_input.get() == self.folder_output.get():
+            messagebox.showerror("Error message", "Input and output directories are similar, change one path")
+
+
+
+    
+    def validate(self, new_text):
+        """
+        Test if user input is an integer
+        """
+        if not new_text: # the field is being cleared
+            self.entered_number = 0
+            return True
+        try:
+            self.entered_number = int(new_text)
+            self.entered_number > 0
+            return True
+        except ValueError:
+            return False
+
+    def update(self):
+        self.nb_songs += self.entered_number
+        #self.nb_songs.set(self.nb_songs)
+        print("Number of song:"+str(self.nb_songs))
+
+
+
+    def find_mp3(self, dir_input):
+        matches = []
+        for root, dirnames, filenames in os.walk(dir_input):
+            for filename in fnmatch.filter(filenames, '*.mp3'):
+                matches.append(os.path.join(root, filename))
+        if len(matches) == 0:
+            messagebox.showerror("Error message", "No mp3 files were found in "+dir_input)
+            sys.exit()
+        else:
+            return matches
+        
 
     def display_help(self):
-      pass
+        print(self.folder_input.get())
+        print(self.folder_output.get())
+        messagebox.showinfo("Help window", "a Tk MessageBox")
+
     
     def quit(self):
         self.frame.quit()   
