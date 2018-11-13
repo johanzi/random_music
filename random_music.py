@@ -5,16 +5,12 @@ import random # Get random elements from song list
 
 # Make Tkinter working on python2 and 3
 try:
-    #import Tkinter as tk
-    #from ttk import *
     from Tkinter import *
     from ttk import *
     import tkFileDialog as filedialog
     import tkMessageBox as messagebox
     
 except ImportError:
-    #import tkinter as tk
-    #from tkinter.ttk import *
     from tkinter import *
     from tkinter.ttk import *
     from tkinter import filedialog, messagebox
@@ -29,7 +25,7 @@ class random_music():
         # I can define the size using padding option
         self.frame = Frame(root, padding=50)
         
-        # This line seems optional
+        # This line seems optional (in condition that root is called as root in other methods)
         self.root = root
         
         # Name of the main Window
@@ -39,7 +35,7 @@ class random_music():
         self.frame.grid()
 
 
-        ##################### MENU ##########################
+        ############################### MENU #######################################
         
         # Create a menu bar with the label "Menu" and submenus "Help" and "Quit"
         self.menubar = Menu(self.root)
@@ -54,7 +50,7 @@ class random_music():
         self.menubar.add_cascade(menu=self.menu_file, label='Menu')
 
        
-        ################# INPUT AND OUTPUT DIRECTORIES ##########################
+        ###################### INPUT AND OUTPUT DIRECTORIES ##########################
         
         # Create buttons to select the directories
 
@@ -91,7 +87,7 @@ class random_music():
         browse_button_output.grid(row=1, column=1)
 
         
-        ################# NUMBER OF SONGS ##########################
+        ######################## NUMBER OF SONGS ##########################
 
         self.nb_songs = 0
         self.entered_number = 0
@@ -103,6 +99,9 @@ class random_music():
         # Create entry pannel abnd use a validate command
         # to verify that then entry is an integer
         # check http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/entry-validation.html
+        # TOFIX: when only digit is entered (no paths), the error message of 'no mp3 files are found'
+        # is displayed. Try to handle this to display an appropriate error message
+        
         vcmd = self.root.register(self.validate) # we have to wrap the command
         self.entry = Entry(self.root, validate="key", validatecommand=(vcmd, '%P'))
         self.entry.grid(row=2, column=1)
@@ -112,27 +111,36 @@ class random_music():
         self.add_button.grid(row=2, column=2)
         
         
+        # All the inputs are there, now we can use the different functions needed
         
         ################## LAUNCH FUNCTIONS ###########################
 
-        # All the inputs are there, now we can use the different functions needed
-
+        # TODO: implement progress bars for the searching (indeterminate) and 
+        # the copying (determinate) step. There will probably need of threading for this
 
     def main(self):
-
+        """
+        This method calls all methods needed after the user provided 3 valid
+        arguments (input_dir, output_dir, and nb_songs)
+        """
+        # Get list of songs of the input directory
         self.list_songs = self.find_mp3(self.folder_input.get())
 
+        # Check if there is a least one song in the directory, return 
+        # error message if not
         if self.nb_songs == None:
             sys.exit(messagebox.showerror("Help window", "a Tk MessageBox"))
         
         # Get the return of select_random wich is tuple of 2 items
+        # The nb_songs variable is updated to the true number of songs found 
+        # in case user gave more songs than the input directory actuall contains
         tuple = self.select_random(self.list_songs, self.nb_songs)
         self.sub_list = tuple[0]
         self.nb_songs = tuple[1]
         
-        # Copy the files to output directory
+        # Copy the mp3 files to output directory
         self.copy_files(self.sub_list, self.folder_output.get())
-        
+         
         # Display info message after copying
         messagebox.showinfo("Information window", str(self.nb_songs)+" mp3 files were successfully copied into "+str(self.folder_output.get()))
         
@@ -160,12 +168,13 @@ class random_music():
   
     def validate(self, new_text):
         """
-        Test if user input is an integer and if superior to 0
+        Allow user to enter an integer only
         """
         
         # This if statement is needed otherwise one cannot erase the first digit entered in the window
         if not new_text:
             return True
+
         # Allow only integer entry
         try:
             self.entered_number = int(new_text)
@@ -203,7 +212,9 @@ class random_music():
         """
         Select randomly nb_songs mp3 files from list list_songs
         Return a tuple with the files selected and the actual
-        number of songs (adjusted nb_songs)
+        number of songs (corrected nb_songs) in case value of input
+        is superior to the actual number of mp3 files in the input
+        directory
         """
         if len(list_songs) < nb_songs:
             nb_songs = len(list_songs)
@@ -242,6 +253,7 @@ class random_music():
                         shutil.copy(i, file_name)
                         break
                     ii += 1
+
 
     def display_help(self):
         """
