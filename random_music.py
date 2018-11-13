@@ -162,9 +162,13 @@ class random_music():
         """
         Test if user input is an integer and if superior to 0
         """
+        
+        # This if statement is needed otherwise one cannot erase the first digit entered in the window
+        if not new_text:
+            return True
+        # Allow only integer entry
         try:
             self.entered_number = int(new_text)
-            self.entered_number > 0
             return True
         except ValueError:
             return False
