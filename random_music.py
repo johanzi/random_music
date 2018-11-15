@@ -25,15 +25,20 @@ class Progress():
         self.interval = 10
         self.progressbar = Progressbar(root, orient=HORIZONTAL,
                                            mode="indeterminate",
-                                           maximum=self.maximum)
+                                           maximum=self.maximum,
+                                           value=0)
+        
         self.progressbar.grid(row=row, column=column,
                               columnspan=columnspan, sticky="we")
+        
+        
+        self.progressbar.configure(mode="determinate", value=0)
+        
         self.thread = threading.Thread()
         
         # Progress bar should be empty at first
-        self.progressbar.configure(mode="determinate", value=0)
-        #self.thread.__init__(target=self.progressbar.start(self.interval),
-        #                     args=())
+        
+        #self.thread.__init__(target=self.progressbar.start(self.interval), args=())
         self.thread.start()
 
     def pb_stop(self):
@@ -85,7 +90,6 @@ class random_music():
         
         # Give label to menu name
         self.menubar.add_cascade(menu=self.menu_file, label='Menu')
-
        
         ###################### INPUT AND OUTPUT DIRECTORIES ##########################
         
@@ -143,24 +147,37 @@ class random_music():
         self.entry = Entry(self.root, validate="key", validatecommand=(vcmd, '%P'))
         self.entry.grid(row=2, column=1)
         
-        
-        prog_bar = Progress(root, row=3, column=0, columnspan=3)
-        
+          
         # Add OK button to validate input song number and launch 'main'
-        self.add_button = Button(self.root, text="OK", command= lambda:[self.update(), self.main(), prog_bar.pb_start()])
+        self.add_button = Button(self.root, text="OK", command=lambda:[self.update(), self.main()])
         self.add_button.grid(row=2, column=2)
         
+        # prog_bar.pb_start order in the "command=" does not seem to matter and the progress bar starts only the the main() is finished. It works when I remove the main() function. Same problem if I put directly prog_bar.pb_start in the beginning of main() method
         
         # All the inputs are there, now we can use the different functions needed
         
         ##################### PROGRESS BAR ###########################
         
-        #prog_bar = Progress(root, row=3, column=0, columnspan=3)
         
-        # Button 1
-        #start_button = Button(root, text="start",
-        #                           command=prog_bar.pb_start)
-        #start_button.grid(row=4, column=0)
+        # I also try to initiate the progress bar at the beginning and it did
+        # not make a difference (still stopping while run is running)
+        
+        # The system works in script tkinter_progress_py27.py so I should find a way to make it work here too
+        
+        self.prog_bar = Progress(root, row=3, column=0, columnspan=3)
+        
+        
+        
+        # I move the main() and prog_bar.pb_start commands in a new button but same problem occurs = bar starts only when main is finished
+        start_button = Button(root, text="start",
+                                  command=self.prog_bar.pb_start)
+        start_button.grid(row=4, column=2)
+        
+         # Button 2
+        stop_button = Button(root, text="stop",
+                                 command=self.prog_bar.pb_stop)
+        stop_button.grid(row=5, column=2)
+        
         
         ################## LAUNCH FUNCTIONS ###########################
 
@@ -168,6 +185,7 @@ class random_music():
         # the copying (determinate) step. There will probably need of threading for this
 
     def main(self):
+  
         """
         This method calls all methods needed after the user provided 3 valid
         arguments (input_dir, output_dir, and nb_songs)
