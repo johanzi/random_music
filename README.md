@@ -12,7 +12,9 @@ Double-click on the script file or launch it directly from a terminal such as:
 
 
 ´´´
+
 python random_music.py
+
 
 ´´´
 
