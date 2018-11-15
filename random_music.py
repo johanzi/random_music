@@ -2,6 +2,8 @@ import shutil # copy files
 import os # handle search paths
 import fnmatch # search files recursively
 import random # Get random elements from song list
+import threading
+import time
 
 # Make Tkinter working on python2 and 3
 try:
@@ -14,6 +16,41 @@ except ImportError:
     from tkinter import *
     from tkinter.ttk import *
     from tkinter import filedialog, messagebox
+
+
+class Progress():
+    """ threaded progress bar for tkinter gui """
+    def __init__(self, root, row, column, columnspan):
+        self.maximum = 100
+        self.interval = 10
+        self.progressbar = Progressbar(root, orient=HORIZONTAL,
+                                           mode="indeterminate",
+                                           maximum=self.maximum)
+        self.progressbar.grid(row=row, column=column,
+                              columnspan=columnspan, sticky="we")
+        self.thread = threading.Thread()
+        
+        # Progress bar should be empty at first
+        self.progressbar.configure(mode="determinate", value=0)
+        #self.thread.__init__(target=self.progressbar.start(self.interval),
+        #                     args=())
+        self.thread.start()
+
+    def pb_stop(self):
+        """ stops the progress bar """
+        if not self.thread.isAlive():
+            VALUE = self.progressbar["value"]
+            self.progressbar.stop()
+            self.progressbar["value"] = VALUE
+
+    def pb_start(self):
+        """ starts the progress bar """
+        if not self.thread.isAlive():
+            VALUE = self.progressbar["value"]
+            self.progressbar.configure(mode="indeterminate",
+                                       maximum=self.maximum,
+                                       value=VALUE)
+            self.progressbar.start(self.interval)
 
 
 class random_music():
@@ -106,12 +143,24 @@ class random_music():
         self.entry = Entry(self.root, validate="key", validatecommand=(vcmd, '%P'))
         self.entry.grid(row=2, column=1)
         
+        
+        prog_bar = Progress(root, row=3, column=0, columnspan=3)
+        
         # Add OK button to validate input song number and launch 'main'
-        self.add_button = Button(self.root, text="OK", command= lambda:[self.update(), self.main()])
+        self.add_button = Button(self.root, text="OK", command= lambda:[self.update(), self.main(), prog_bar.pb_start()])
         self.add_button.grid(row=2, column=2)
         
         
         # All the inputs are there, now we can use the different functions needed
+        
+        ##################### PROGRESS BAR ###########################
+        
+        #prog_bar = Progress(root, row=3, column=0, columnspan=3)
+        
+        # Button 1
+        #start_button = Button(root, text="start",
+        #                           command=prog_bar.pb_start)
+        #start_button.grid(row=4, column=0)
         
         ################## LAUNCH FUNCTIONS ###########################
 
@@ -237,7 +286,11 @@ class random_music():
             # Check if file name exists in dir_output
             file_name = os.path.basename(i)
             file_name = os.path.join(dir_output, file_name)
-
+            
+            
+            time.sleep(1)
+            
+            
             if not os.path.exists(file_name):
                 shutil.copy(i, dir_output)
 
@@ -267,6 +320,9 @@ class random_music():
         Quit the application
         """
         self.frame.quit()   
+
+        
+
 
 
 # Build the app in the main loop
