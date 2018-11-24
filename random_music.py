@@ -56,6 +56,9 @@ class Progress():
                                        maximum=self.maximum,
                                        value=VALUE)
             self.progressbar.start(self.interval)
+            
+    def print_statement(self):
+        messagebox.showinfo("Thread is running")
 
 
 class random_music():
@@ -149,7 +152,7 @@ class random_music():
         
           
         # Add OK button to validate input song number and launch 'main'
-        self.add_button = Button(self.root, text="OK", command=lambda:[self.update(), self.main()])
+        self.add_button = Button(self.root, text="OK", command=lambda:[self.update(), self.start_thread(self.main()), self.prog_bar.pb_start()]) #, self.prog_bar.pb_start()])
         self.add_button.grid(row=2, column=2)
         
         # prog_bar.pb_start order in the "command=" does not seem to matter and the progress bar starts only the the main() is finished. It works when I remove the main() function. Same problem if I put directly prog_bar.pb_start in the beginning of main() method
@@ -179,17 +182,28 @@ class random_music():
         stop_button.grid(row=5, column=2)
         
         
+        # Button 4
+        print_button = Button(root, text="print",
+                                 command=self.prog_bar.print_statement)
+        print_button.grid(row=6, column=2)
+        
         ################## LAUNCH FUNCTIONS ###########################
 
         # TODO: implement progress bars for the searching (indeterminate) and 
         # the copying (determinate) step. There will probably need of threading for this
 
+        
+    def start_thread(self):
+        threading.Thread(target=self).start()
+        
     def main(self):
   
         """
         This method calls all methods needed after the user provided 3 valid
         arguments (input_dir, output_dir, and nb_songs)
         """
+        #prog_bar.pb_start()
+        
         # Get list of songs of the input directory
         self.list_songs = self.find_mp3(self.folder_input.get())
 
