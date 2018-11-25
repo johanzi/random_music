@@ -4,6 +4,7 @@ import fnmatch # search files recursively
 import random # Get random elements from song list
 import threading
 import time
+import sys
 
 # Make Tkinter working on python2 and 3
 try:
@@ -50,7 +51,8 @@ class Progress():
             VALUE = self.progressbar["value"]
             self.progressbar.stop()
             self.progressbar["value"] = VALUE
-
+            
+            
     def pb_start(self):
         """ starts the progress bar """
         if not self.thread.isAlive():
@@ -58,9 +60,10 @@ class Progress():
             self.progressbar.configure(mode="indeterminate",
                                        maximum=self.maximum,
                                        value=VALUE)
-            #self.progressbar.start(self.interval)
+            #self.progressbar.start(self.interval) # self.interval make loading bar moving faster
             self.progressbar.start()
-            
+
+
     def pb_complete(self):
         """ stops the progress bar and fills it """
         if not self.thread.isAlive():
@@ -68,10 +71,7 @@ class Progress():
             self.progressbar.configure(mode="determinate",
                                        maximum=self.maximum,
                                        value=self.maximum)
-        
-    def print_statement(self):
-        messagebox.showinfo("Thread is running")
-
+                                       
 
 class random_music():
     
@@ -164,15 +164,28 @@ class random_music():
         
           
         # Add OK button to validate input song number and launch 'main'
-        self.add_button = Button(self.root, text="OK", command=lambda:[self.prog_bar.pb_start(), self.update(), threading.Thread(target=self.main).start()])
+        
+        # A problem to deal with threading occurs in Python2.7. I am not sure why yet so
+        # I implement here an if statement python-version dependent.
+        if sys.version_info[0] == 2:
+            # Works in Python2
+            self.add_button = Button(self.root, text="OK", command=lambda:[self.update(), self.main()])
+        elif sys.version_info[0] == 3:
+            # Works in Python3 but not 2
+            self.add_button = Button(self.root, text="OK", command=lambda:[self.prog_bar.pb_start(), self.update(), threading.Thread(target=self.main).start()])
+        else:
+            sys.exit(messagebox.showerror("Error window", "Python version not recognized (neither 2 nor 3)"))
+
+        # Position OK button on the grid       
         self.add_button.grid(row=2, column=2)
         
         # All the inputs are there, now we can use the different functions needed
         
         ##################### PROGRESS BAR ###########################
         
-        # Add a progress bar on the main GUI window
-        self.prog_bar = Progress(root, row=3, column=0, columnspan=3)
+        # Add a progress bar on the main GUI window only with Python3 (works without flaw only in Python3)
+        if sys.version_info[0] == 3:
+            self.prog_bar = Progress(root, row=3, column=0, columnspan=3)
         
         ################## LAUNCH FUNCTIONS ###########################
 
@@ -185,7 +198,6 @@ class random_music():
         This method calls all methods needed after the user provided 3 valid
         arguments (input_dir, output_dir, and nb_songs)
         """
-        #prog_bar.pb_start()
         
         # Get list of songs of the input directory
         self.list_songs = self.find_mp3(self.folder_input.get())
@@ -205,16 +217,15 @@ class random_music():
         # Copy the mp3 files to output directory
         self.copy_files(self.sub_list, self.folder_output.get())
         
-        # Make progress bar appear as complete
-        self.prog_bar.pb_complete()
+        # Make progress bar appear as complete (only if python3 is used)
+        if sys.version_info[0] == 3:
+            self.prog_bar.pb_complete()
                 
         # Display info message after copying
         messagebox.showinfo("Information window", str(self.nb_songs)+" mp3 files were successfully copied into "+str(self.folder_output.get()))
         
         # Reassign nb_songs to 0 so the user can redo a copy operation with a new value
         self.nb_songs = 0
-        
-        
         
   
     def browse_button(self, folder):
