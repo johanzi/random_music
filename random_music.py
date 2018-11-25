@@ -61,6 +61,14 @@ class Progress():
             #self.progressbar.start(self.interval)
             self.progressbar.start()
             
+    def pb_complete(self):
+        """ stops the progress bar and fills it """
+        if not self.thread.isAlive():
+            self.progressbar.stop()
+            self.progressbar.configure(mode="determinate",
+                                       maximum=self.maximum,
+                                       value=self.maximum)
+        
     def print_statement(self):
         messagebox.showinfo("Thread is running")
 
@@ -156,39 +164,15 @@ class random_music():
         
           
         # Add OK button to validate input song number and launch 'main'
-        self.add_button = Button(self.root, text="OK", command=lambda:[self.prog_bar.pb_start(), self.update(), threading.Thread(target=self.main).start()]) #, self.prog_bar.pb_start()])
+        self.add_button = Button(self.root, text="OK", command=lambda:[self.prog_bar.pb_start(), self.update(), threading.Thread(target=self.main).start()])
         self.add_button.grid(row=2, column=2)
-        
-        # prog_bar.pb_start order in the "command=" does not seem to matter and the progress bar starts only the the main() is finished. It works when I remove the main() function. Same problem if I put directly prog_bar.pb_start in the beginning of main() method
         
         # All the inputs are there, now we can use the different functions needed
         
         ##################### PROGRESS BAR ###########################
         
-        
-        # I also try to initiate the progress bar at the beginning and it did
-        # not make a difference (still stopping while run is running)
-        
-        # The system works in script tkinter_progress_py27.py so I should find a way to make it work here too
-        
+        # Add a progress bar on the main GUI window
         self.prog_bar = Progress(root, row=3, column=0, columnspan=3)
-        
-        
-        
-        # I move the main() and prog_bar.pb_start commands in a new button but same problem occurs = bar starts only when main is finished
-        start_button = Button(root, text="start",
-                                  command=self.prog_bar.pb_start)
-        start_button.grid(row=4, column=2)
-        
-         # Button 2
-        stop_button = Button(root, text="stop",
-                                 command=self.prog_bar.pb_stop)
-        stop_button.grid(row=5, column=2)
-                
-        # Button 4
-        print_button = Button(root, text="print",
-                                 command=self.prog_bar.print_statement)
-        print_button.grid(row=6, column=2)
         
         ################## LAUNCH FUNCTIONS ###########################
 
@@ -220,12 +204,17 @@ class random_music():
         
         # Copy the mp3 files to output directory
         self.copy_files(self.sub_list, self.folder_output.get())
-         
+        
+        # Make progress bar appear as complete
+        self.prog_bar.pb_complete()
+                
         # Display info message after copying
         messagebox.showinfo("Information window", str(self.nb_songs)+" mp3 files were successfully copied into "+str(self.folder_output.get()))
         
         # Reassign nb_songs to 0 so the user can redo a copy operation with a new value
         self.nb_songs = 0
+        
+        
         
   
     def browse_button(self, folder):
