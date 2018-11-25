@@ -32,6 +32,9 @@ class Progress():
                               columnspan=columnspan, sticky="we")
         
         
+        # progress bar is first define as determinate since 
+        # a little chunk of green is visible it mode 'indeterminate'
+        # is chosen
         self.progressbar.configure(mode="determinate", value=0)
         
         self.thread = threading.Thread()
@@ -55,7 +58,8 @@ class Progress():
             self.progressbar.configure(mode="indeterminate",
                                        maximum=self.maximum,
                                        value=VALUE)
-            self.progressbar.start(self.interval)
+            #self.progressbar.start(self.interval)
+            self.progressbar.start()
             
     def print_statement(self):
         messagebox.showinfo("Thread is running")
@@ -152,7 +156,7 @@ class random_music():
         
           
         # Add OK button to validate input song number and launch 'main'
-        self.add_button = Button(self.root, text="OK", command=lambda:[self.update(), self.start_thread(self.main()), self.prog_bar.pb_start()]) #, self.prog_bar.pb_start()])
+        self.add_button = Button(self.root, text="OK", command=lambda:[self.prog_bar.pb_start(), self.update(), threading.Thread(target=self.main).start()]) #, self.prog_bar.pb_start()])
         self.add_button.grid(row=2, column=2)
         
         # prog_bar.pb_start order in the "command=" does not seem to matter and the progress bar starts only the the main() is finished. It works when I remove the main() function. Same problem if I put directly prog_bar.pb_start in the beginning of main() method
@@ -180,8 +184,7 @@ class random_music():
         stop_button = Button(root, text="stop",
                                  command=self.prog_bar.pb_stop)
         stop_button.grid(row=5, column=2)
-        
-        
+                
         # Button 4
         print_button = Button(root, text="print",
                                  command=self.prog_bar.print_statement)
@@ -191,10 +194,6 @@ class random_music():
 
         # TODO: implement progress bars for the searching (indeterminate) and 
         # the copying (determinate) step. There will probably need of threading for this
-
-        
-    def start_thread(self):
-        threading.Thread(target=self).start()
         
     def main(self):
   
