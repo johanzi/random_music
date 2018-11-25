@@ -2,6 +2,9 @@ import shutil # copy files
 import os # handle search paths
 import fnmatch # search files recursively
 import random # Get random elements from song list
+import threading
+import time
+import sys
 
 # Make Tkinter working on python2 and 3
 try:
@@ -15,6 +18,60 @@ except ImportError:
     from tkinter.ttk import *
     from tkinter import filedialog, messagebox
 
+
+class Progress():
+    """ threaded progress bar for tkinter gui """
+    def __init__(self, root, row, column, columnspan):
+        self.maximum = 100
+        self.interval = 10
+        self.progressbar = Progressbar(root, orient=HORIZONTAL,
+                                           mode="indeterminate",
+                                           maximum=self.maximum,
+                                           value=0)
+        
+        self.progressbar.grid(row=row, column=column,
+                              columnspan=columnspan, sticky="we")
+        
+        
+        # progress bar is first define as determinate since 
+        # a little chunk of green is visible it mode 'indeterminate'
+        # is chosen
+        self.progressbar.configure(mode="determinate", value=0)
+        
+        self.thread = threading.Thread()
+        
+        # Progress bar should be empty at first
+        
+        #self.thread.__init__(target=self.progressbar.start(self.interval), args=())
+        self.thread.start()
+
+    def pb_stop(self):
+        """ stops the progress bar """
+        if not self.thread.isAlive():
+            VALUE = self.progressbar["value"]
+            self.progressbar.stop()
+            self.progressbar["value"] = VALUE
+            
+            
+    def pb_start(self):
+        """ starts the progress bar """
+        if not self.thread.isAlive():
+            VALUE = self.progressbar["value"]
+            self.progressbar.configure(mode="indeterminate",
+                                       maximum=self.maximum,
+                                       value=VALUE)
+            #self.progressbar.start(self.interval) # self.interval make loading bar moving faster
+            self.progressbar.start()
+
+
+    def pb_complete(self):
+        """ stops the progress bar and fills it """
+        if not self.thread.isAlive():
+            self.progressbar.stop()
+            self.progressbar.configure(mode="determinate",
+                                       maximum=self.maximum,
+                                       value=self.maximum)
+                                       
 
 class random_music():
     
@@ -48,7 +105,6 @@ class random_music():
         
         # Give label to menu name
         self.menubar.add_cascade(menu=self.menu_file, label='Menu')
-
        
         ###################### INPUT AND OUTPUT DIRECTORIES ##########################
         
@@ -106,23 +162,43 @@ class random_music():
         self.entry = Entry(self.root, validate="key", validatecommand=(vcmd, '%P'))
         self.entry.grid(row=2, column=1)
         
+          
         # Add OK button to validate input song number and launch 'main'
-        self.add_button = Button(self.root, text="OK", command= lambda:[self.update(), self.main()])
+        
+        # A problem to deal with threading occurs in Python2.7. I am not sure why yet so
+        # I implement here an if statement python-version dependent.
+        if sys.version_info[0] == 2:
+            # Works in Python2
+            self.add_button = Button(self.root, text="OK", command=lambda:[self.update(), self.main()])
+        elif sys.version_info[0] == 3:
+            # Works in Python3 but not 2
+            self.add_button = Button(self.root, text="OK", command=lambda:[self.prog_bar.pb_start(), self.update(), threading.Thread(target=self.main).start()])
+        else:
+            sys.exit(messagebox.showerror("Error window", "Python version not recognized (neither 2 nor 3)"))
+
+        # Position OK button on the grid       
         self.add_button.grid(row=2, column=2)
         
-        
         # All the inputs are there, now we can use the different functions needed
+        
+        ##################### PROGRESS BAR ###########################
+        
+        # Add a progress bar on the main GUI window only with Python3 (works without flaw only in Python3)
+        if sys.version_info[0] == 3:
+            self.prog_bar = Progress(root, row=3, column=0, columnspan=3)
         
         ################## LAUNCH FUNCTIONS ###########################
 
         # TODO: implement progress bars for the searching (indeterminate) and 
         # the copying (determinate) step. There will probably need of threading for this
-
+        
     def main(self):
+  
         """
         This method calls all methods needed after the user provided 3 valid
         arguments (input_dir, output_dir, and nb_songs)
         """
+        
         # Get list of songs of the input directory
         self.list_songs = self.find_mp3(self.folder_input.get())
 
@@ -140,7 +216,11 @@ class random_music():
         
         # Copy the mp3 files to output directory
         self.copy_files(self.sub_list, self.folder_output.get())
-         
+        
+        # Make progress bar appear as complete (only if python3 is used)
+        if sys.version_info[0] == 3:
+            self.prog_bar.pb_complete()
+                
         # Display info message after copying
         messagebox.showinfo("Information window", str(self.nb_songs)+" mp3 files were successfully copied into "+str(self.folder_output.get()))
         
@@ -237,7 +317,11 @@ class random_music():
             # Check if file name exists in dir_output
             file_name = os.path.basename(i)
             file_name = os.path.join(dir_output, file_name)
-
+            
+            
+            time.sleep(1)
+            
+            
             if not os.path.exists(file_name):
                 shutil.copy(i, dir_output)
 
@@ -267,6 +351,9 @@ class random_music():
         Quit the application
         """
         self.frame.quit()   
+
+        
+
 
 
 # Build the app in the main loop
