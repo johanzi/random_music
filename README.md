@@ -8,15 +8,7 @@ If you find time consuming the transfer of mp3 music files from your desktop com
 
 This program is compatible with Python2 and 3.
 
-Double-click on the script file or launch it directly from a terminal such as:
-
-
-´´´
-
-python random_music.py
-
-
-´´´
+Double-click on the script file or launch it directly from a terminal such as `python random_music.py`
 
 ## Notes
 The GUI was developed using tkinter. Several widgets are used within the script and constitute an example on how using tkinter to develop a simple.
